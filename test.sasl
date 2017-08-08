@@ -1,3 +1,12 @@
+
+# test.sasl 
+
+# Author:  Dan Piponi (sigfpe)  
+
+# Released as "public domain" with the 
+# author's consent by mooseman ( "j4d3 goat" )  
+
+
 def id x = x.						
 							
 def until p f x = if p x then x else until p f (f x).	

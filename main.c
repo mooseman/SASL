@@ -1,3 +1,16 @@
+
+
+/*  main.c  
+
+Author:  Dan Piponi (sigfpe)  
+
+Released as "public domain" with the 
+author's consent by mooseman ( "j4d3 goat" )   
+
+*/  
+
+
+
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
