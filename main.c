@@ -7,6 +7,10 @@ Author:  Dan Piponi (sigfpe)
 Released as "public domain" with the 
 author's consent by mooseman ( "j4d3 goat" )   
 
+** Changes ** 
+10th Jan 2017 - Replaced index() and atoi() 
+functions with their standard equivalents. 
+
 */  
 
 
@@ -377,7 +381,7 @@ int get_number() {
     }
     *p = 0;
 
-    return atoi(number);
+    return strtol(number, NULL, 10);
 }
 
 token *lex_numeric_constant() {
@@ -389,7 +393,7 @@ token *lex_numeric_constant() {
  */
 token *lex_operator() {
     static char *op_chars = "()=.:;+-*/";
-    char *p = index(op_chars,current_char);
+    char *p = strchr(op_chars,current_char);
     if (p!=NULL) {
 	static int token_table[] = {
 	    TOKEN_LPAREN, TOKEN_RPAREN,
@@ -627,7 +631,7 @@ list *parse_combexpr() {
 	    TOKEN_ELSE, TOKEN_PERIOD, TOKEN_SEMICOLON,
 	    TOKEN_WHERE, TOKEN_COLON, 0
 	};
-	if (index(final,current_token->type)) {
+	if ( strchr(final,current_token->type)) {
 	    return r;
 	}
 	r = apply(r,parse_atomic());
