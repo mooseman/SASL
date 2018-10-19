@@ -5,6 +5,32 @@ A simple and educational compiler for the SASL programming language.
 
 
 
+Examples of usage
+=================
+
+In the examples below, "$" is the command prompt. 
+
+
+$ ./sasl  test.sasl  
+                          ( Waiting for your input ) 
+def plus x y = x+y.       ( Don't forget the .     )  
+plus 5 7 ;                ( Don't forget the ;     ) 
+12   
+def fst a b = a.          ( Another function definition ) 
+fst 23 45 ; 
+23
+12 + 23 ; 
+35 
+def third a b c = c. 
+third 3 5 7 ; 
+7  
+
+^C                        ( Ctrl-C to exit ) 
+$  
+
+
+
+
 Acknowledgement and thanks
 ========================== 
 

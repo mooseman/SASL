@@ -1,7 +1,8 @@
 
 
-/*  main.c  
+/*  sasl.c  
 
+ 
 Author:  Dan Piponi (sigfpe)  
 
 Released as "public domain" with the 
@@ -75,7 +76,6 @@ void error_msg(char *a) {
 
 typedef enum {
     COMB_ERROR,
-
     COMB_ATOM,
     COMB_COMB,
     COMB_PAIR,
@@ -421,6 +421,7 @@ token *lex_operator() {
 	return make_token_int(TOKEN_GREATER,0);
     }
     error_msg("Unrecognised symbol");
+    return make_token_int(TOKEN_ERROR,0);
 }
 
 void lex_white_space() {
@@ -495,6 +496,7 @@ list *parse_name() {
     } else {
 	error_msg("Expected a name");
     }
+    return make_list();
 }
 
 /*
@@ -502,7 +504,7 @@ list *parse_name() {
  *		'head' | 'tail' | 'not'
  */
 list *parse_atomic() {
-    list *r;
+    list *r = make_list();
     switch (current_token->type) {
     case TOKEN_CONSTANT:
 	r = make_int(current_token->value.int_value);
@@ -538,6 +540,7 @@ list *parse_atomic() {
     default:
 	error_msg("Parse error");
     }
+    return r; 
 }
 
 list *parse_sequence(list *r,token_type token,list *(*type)(),list *op) {
@@ -602,7 +605,7 @@ list *parse_comparisonexpr() {
  * LOGICALPRODUCT := COMPARISONEXPR { 'and' COMPARISONEXPR }
  */
 list *parse_logicalproduct() {
-    list *r = parse_comparisonexpr(),*or;
+    list *r = parse_comparisonexpr(); 
     r = parse_sequence(r,TOKEN_AND,parse_comparisonexpr,and);
     return r;
 }
@@ -663,7 +666,7 @@ void display(list *);
  *	{ WHERE NAME ABSTRACTION ';' { NAME ABSTRACTION ';' } }
  */
 list *parse_expr() {
-    list *r,*abstraction;
+    list *r ;   /* ,*abstraction; */ 
     if (current_token->type==TOKEN_IF) {
 	    return parse_condexpr();
     }
@@ -982,8 +985,12 @@ int list_eq(list *a,list *b) {
 	error_msg("Can't compare unevaluated expressions");
     case COMB_INTEGER:
 	return get_int(a)==get_int(b);
+	case COMB_VAR: 
+	return get_var(a)==get_var(b);	
+    case COMB_ERROR:
+    error_msg("Invalid equality comparison");   
     }
-    error_msg("Invalid equality comparison");
+    return -1; 
 }
 
 int list_lt(list *a,list *b) {
@@ -1118,6 +1125,7 @@ int optimise(list *a) {
 
     return 0;
 }
+
 
 /*
  * Core combinatorial reduction engine.
@@ -1377,18 +1385,36 @@ void make_keywords() {
     *lookup(&keywords,"not")	= (void *)TOKEN_NOT;
 }
 
-int main(int argc,char **argv) {
-    list *t;
 
+int main(int argc,char **argv) {
+	
+     FILE *fp; 	
+	 char ch; 
+	
+	 if(argc != 2) {
+       printf("Usage: sasl prog.sasl \n");
+       exit(1);
+}
+	
+	 if ((fp = fopen(argv[1], "r"))==NULL) {
+        printf("Cannot open file \n");
+        exit(1);
+}
+	
+	while ((ch = fgetc(fp)) !=EOF) {
+		
+    list *t;
     constants();
     make_keywords();
-
-    next_char();
+    ch = next_char();
     current_token = lex();
     t = parse_program();
-    t = stack_eval(t);
-    display(t);
-    printf("\n");
-
+    t = stack_eval(t);   
+        
+    printf("%d \n", t->value);  
+    /* display(t);
+    printf("\n");  */ 
+    
+}   
     return 0;
 }
